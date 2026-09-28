@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Detektif Kiko: Numerasi 3 Level - Kelas 5 SD</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #f3e8ff 100%);
+            min-height: 100vh;
+            user-select: none;
+        }
+        
+        .font-fredoka { font-family: 'Fredoka', cursive, sans-serif; }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.15), 0 8px 10px -6px rgba(14, 165, 233, 0.1);
+        }
+        
+        .btn-bounce {
+            transition: all 0.2s ease;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .pulse-gentle {
+            animation: pulseGentle 2s infinite;
+        }
+        @keyframes pulseGentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-certificate, #printable-certificate * {
+                visibility: visible;
+            }
+            #printable-certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6 text-slate-800 flex flex-col min-h-screen">
+
+    <div class="max-w-4xl mx-auto w-full flex-grow flex flex-col">
+        <!-- HEADER -->
+        <header class="no-print bg-white/90 backdrop-blur-md rounded-3xl p-4 md:p-5 mb-5 card-shadow border-2 border-sky-200 flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-2 z-30">
+            <div class="flex items-center gap-3">
+                <div class="w-14 h-14 bg-sky-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-md font-fredoka shrink-0 border-2 border-white">
+                    🐰
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold font-fredoka text-sky-600 leading-tight">Detektif Kiko Numerasi</h1>
+                    <p class="text-slate-500 text-xs font-semibold">Petualangan Matematika Kelas 5 SD (3 Level • 10 Soal/Level)</p>
+                </div>
+            </div>
+            
+            <!-- GAME STATS COUNTER -->
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <div id="game-stats" class="hidden flex items-center gap-2 md:gap-3 bg-sky-50 px-3 py-1.5 rounded-2xl border border-sky-200 shadow-sm">
+                    <div class="text-center px-1">
+                        <span class="text-[10px] text-sky-600 font-bold block">LEVEL</span>
+                        <span id="display-level" class="font-fredoka text-base text-sky-700">1</span>
+                    </div>
+                    <div class="h-6 w-px bg-sky-200"></div>
+                    <div class="text-center px-1">
+                        <span class="text-[10px] text-amber-600 font-bold block">SKOR</span>
+                        <span id="display-score" class="font-fredoka text-base text-amber-600">0</span>
+                    </div>
+                    <div class="h-6 w-px bg-sky-200"></div>
+                    <div class="text-center px-1">
+                        <span class="text-[10px] text-emerald-600 font-bold block">SOAL</span>
+                        <span id="display-progress" class="font-fredoka text-base text-emerald-600">1/10</span>
+                    </div>
+                </div>
+
+                <!-- AUDIO TOGGLE BUTTON -->
+                <button id="btn-sound" onclick="toggleSound()" class="bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 p-2.5 rounded-2xl text-lg text-slate-700 transition-all btn-bounce shadow-sm" title="Matikan/Nyalakan Suara">
+                    🔊
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main id="app-container" class="flex-grow flex flex-col justify-center">
+            
+            <!-- SCREEN 1: WELCOME & LEVEL SELECT -->
+            <div id="screen-welcome" class="bg-white/95 rounded-3xl p-6 md:p-8 card-shadow border-2 border-sky-200 text-center space-y-6 max-w-3xl mx-auto my-auto w-full">
+                <div class="inline-block p-4 bg-sky-100 rounded-3xl text-sky-600 text-4xl shadow-inner border border-sky-200">
+                    🕵️‍♂️ 📏 ⚖️ 🌡️
+                </div>
+                <div>
+                    <span class="bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Modul Kurikulum Merdeka</span>
+                    <h2 class="text-2xl md:text-3xl font-bold font-fredoka text-sky-800 mt-2">Selamat Datang, Detektif Numerasi!</h2>
+                    <p class="text-slate-600 text-sm md:text-base mt-1">Bantu **Kiko** memecahkan 10 soal cerita teka-teki pengukuran, konversi, dan geometri di setiap levelnya!</p>
+                </div>
+
+                <!-- STUDENT NAME & CLASS INPUT FIELDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 max-w-xl mx-auto text-left shadow-sm">
+                    <div class="md:col-span-2">
+                        <label for="student-name-input" class="block text-xs font-bold text-sky-800 uppercase mb-1">
+                            <i class="fa-solid fa-user-pen mr-1"></i> Nama Siswa / Kelompok:
+                        </label>
+                        <input type="text" id="student-name-input" placeholder="Tuliskan namamu di sini..." class="w-full px-3.5 py-2.5 rounded-xl border-2 border-sky-300 focus:outline-none focus:border-sky-600 font-bold text-slate-800 shadow-inner text-sm">
+                    </div>
+                    <div>
+                        <label for="student-class-input" class="block text-xs font-bold text-sky-800 uppercase mb-1">
+                            <i class="fa-solid fa-school mr-1"></i> Kelas:
+                        </label>
+                        <input type="text" id="student-class-input" placeholder="Misal: 5A" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-sky-300 focus:outline-none focus:border-sky-600 font-bold text-slate-800 shadow-inner text-sm">
+                    </div>
+                </div>
+
+                <!-- LEVEL SELECTION CARDS -->
+                <div class="space-y-2 text-left">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Pilih Level Misi Tantangan (10 Soal/Level):</p>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <!-- LEVEL 1 CARD -->
+                        <div onclick="selectAndStart(1)" class="bg-emerald-50 hover:bg-emerald-100/90 border-2 border-emerald-300 rounded-3xl p-5 cursor-pointer btn-bounce flex flex-col justify-between shadow-sm">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="bg-emerald-500 text-white font-fredoka px-3 py-0.5 rounded-full text-xs">LEVEL 1</span>
+                                    <span class="text-emerald-600 text-xl"><i class="fa-solid fa-seedling"></i></span>
+                                </div>
+                                <h3 class="font-fredoka text-lg text-emerald-800 mb-1">Detektif Pemula</h3>
+                                <p class="text-xs text-emerald-700 leading-relaxed mb-3">
+                                    Membaca langsung skala alat ukur: Penggaris, Timbangan, Termometer, Jam, & Grid. (10 Soal)
+                                </p>
+                            </div>
+                            <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs shadow-sm">
+                                Mulai Level 1 <i class="fa-solid fa-play ml-1"></i>
+                            </button>
+                        </div>
+
+                        <!-- LEVEL 2 CARD -->
+                        <div onclick="selectAndStart(2)" class="bg-sky-50 hover:bg-sky-100/90 border-2 border-sky-300 rounded-3xl p-5 cursor-pointer btn-bounce flex flex-col justify-between shadow-sm">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="bg-sky-500 text-white font-fredoka px-3 py-0.5 rounded-full text-xs">LEVEL 2</span>
+                                    <span class="text-sky-600 text-xl"><i class="fa-solid fa-compass"></i></span>
+                                </div>
+                                <h3 class="font-fredoka text-lg text-sky-800 mb-1">Detektif Menengah</h3>
+                                <p class="text-xs text-sky-700 leading-relaxed mb-3">
+                                    Soal cerita 1 langkah hitungan & konversi satuan baku (m-cm, kg-g, jam-menit). (10 Soal)
+                                </p>
+                            </div>
+                            <button class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-xl text-xs shadow-sm">
+                                Mulai Level 2 <i class="fa-solid fa-play ml-1"></i>
+                            </button>
+                        </div>
+
+                        <!-- LEVEL 3 CARD -->
+                        <div onclick="selectAndStart(3)" class="bg-amber-50 hover:bg-amber-100/90 border-2 border-amber-300 rounded-3xl p-5 cursor-pointer btn-bounce flex flex-col justify-between shadow-sm">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="bg-amber-500 text-white font-fredoka px-3 py-0.5 rounded-full text-xs">LEVEL 3</span>
+                                    <span class="text-amber-600 text-xl"><i class="fa-solid fa-trophy"></i></span>
+                                </div>
+                                <h3 class="font-fredoka text-lg text-amber-800 mb-1">Master Detektif</h3>
+                                <p class="text-xs text-amber-700 leading-relaxed mb-3">
+                                    Pemecahan masalah multi-langkah (Keliling & Biaya, Luas, Volume Kubus Satuan 3D, Suhu). (10 Soal)
+                                </p>
+                            </div>
+                            <button class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs shadow-sm">
+                                Mulai Level 3 <i class="fa-solid fa-play ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPREADSHEET REKAPITULASI SKOR SISWA -->
+                <div class="mt-8 bg-white border-2 border-sky-200 rounded-3xl p-5 md:p-6 shadow-sm text-left space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="font-fredoka text-lg md:text-xl text-sky-900 flex items-center gap-2">
+                                <i class="fa-solid fa-table-cells text-sky-500"></i> Spreadsheet Rekapitulasi Skor Siswa
+                            </h3>
+                            <p class="text-xs text-slate-500">Nilai hasil pengerjaan kuis siswa tersimpan otomatis pada tabel di bawah ini.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all btn-bounce shadow-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-excel"></i> Unduh CSV / Excel
+                            </button>
+                            <button onclick="confirmClearRecap()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-3 py-2 rounded-xl transition-all btn-bounce border border-rose-200 flex items-center gap-1">
+                                <i class="fa-solid fa-trash-can"></i> Reset Tabel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SEARCH & FILTER -->
+                    <div class="flex flex-wrap gap-2 items-center justify-between">
+                        <div class="relative flex-grow max-w-xs">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="search-recap" oninput="renderScoreTable()" placeholder="Cari nama atau kelas..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-sky-500">
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-slate-500 font-semibold">Filter Level:</span>
+                            <select id="filter-level" onchange="renderScoreTable()" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-700 focus:outline-none focus:border-sky-500">
+                                <option value="all">Semua Level</option>
+                                <option value="1">Level 1</option>
+                                <option value="2">Level 2</option>
+                                <option value="3">Level 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- REKAP TABLE CONTAINER -->
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-sky-100/80 text-sky-900 font-bold border-b border-sky-200">
+                                    <th class="p-2.5 text-center">#</th>
+                                    <th class="p-2.5">Nama Siswa</th>
+                                    <th class="p-2.5">Kelas</th>
+                                    <th class="p-2.5">Level Misi</th>
+                                    <th class="p-2.5 text-center">Skor Akhir</th>
+                                    <th class="p-2.5">Lencana Penghargaan</th>
+                                    <th class="p-2.5">Waktu Pengerjaan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recap-table-body" class="divide-y divide-slate-100 bg-white font-medium text-slate-700">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: GAMEPLAY SCREEN -->
+            <div id="screen-gameplay" class="hidden space-y-4 my-auto">
+                <!-- STORY & QUESTION CARD -->
+                <div class="bg-white/95 rounded-3xl p-5 md:p-7 card-shadow border-2 border-sky-200 space-y-5">
+                    
+                    <!-- MASCOT STORY BOX -->
+                    <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 flex items-start gap-3 md:gap-4 shadow-sm">
+                        <div class="text-3xl md:text-4xl shrink-0">🐰🔍</div>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-fredoka text-sky-700 text-xs uppercase tracking-wider block">Pesan Rahasia Kiko:</span>
+                                <span id="question-badge-topic" class="bg-sky-200 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Panjang</span>
+                            </div>
+                            <p id="story-text" class="text-slate-700 text-xs md:text-sm font-semibold leading-relaxed">
+                                Loading cerita...
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- VISUAL INTERACTIVE AREA -->
+                    <div id="visual-container" class="bg-slate-50 rounded-2xl p-4 min-h-[210px] flex items-center justify-center border-2 border-dashed border-sky-200 relative overflow-hidden shadow-inner">
+                        <!-- Dynamic Canvas or Visual SVG Rendered Here -->
+                    </div>
+
+                    <!-- QUESTION & INPUT AREA -->
+                    <div id="question-box" class="space-y-3">
+                        <h3 id="question-text" class="font-fredoka text-base md:text-lg text-slate-800 leading-snug">
+                            Loading pertanyaan...
+                        </h3>
+
+                        <!-- OPTIONS CONTAINER -->
+                        <div id="answers-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <!-- Dynamic Answer Buttons Injected Here -->
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM CONTROLS: HINT & PROGRESS TRACKER -->
+                    <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                        <button onclick="showHintModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-2 text-xs transition-all btn-bounce shadow-sm">
+                            <i class="fa-solid fa-lightbulb text-amber-600"></i>
+                            <span>Bantuan / Petunjuk</span>
+                        </button>
+                        
+                        <button onclick="returnToMenu()" class="text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                            <i class="fa-solid fa-house mr-1"></i> Pilih Level Lain
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FEEDBACK AREA (MODAL / OVERLAY) -->
+                <div id="feedback-box" class="hidden bg-white/95 rounded-3xl p-6 card-shadow border-4 border-sky-300 text-center space-y-3 animate-pulseGentle">
+                    <div id="feedback-icon" class="text-5xl">🎉</div>
+                    <h3 id="feedback-title" class="font-fredoka text-2xl font-bold text-slate-800">Hebat Sekali!</h3>
+                    <p id="feedback-desc" class="text-slate-600 text-xs md:text-sm max-w-lg mx-auto">Jawaban kamu tepat sekali.</p>
+                    <p id="feedback-explanation" class="text-xs text-sky-800 bg-sky-50 p-3 rounded-xl border border-sky-200 max-w-lg mx-auto font-medium text-left leading-relaxed">Penjelasan...</p>
+                    <button id="btn-next-question" onclick="nextQuestion()" class="bg-sky-500 hover:bg-sky-600 text-white font-fredoka px-8 py-3 rounded-2xl shadow-md btn-bounce text-sm md:text-base inline-flex items-center gap-2">
+                        <span>Lanjut Sekarang (Otomatis...)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: RESULT & CERTIFICATE SCREEN -->
+            <div id="screen-result" class="hidden my-auto">
+                <div id="printable-certificate" class="bg-white rounded-3xl p-6 md:p-8 card-shadow border-8 border-sky-300 text-center max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+                    
+                    <div class="space-y-1">
+                        <div class="inline-block bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+                            Laporan Hasil Misi Numerasi
+                        </div>
+                        <h2 class="text-2xl md:text-4xl font-bold font-fredoka text-sky-800">Lencana Detektif Numerasi</h2>
+                        <p class="text-slate-500 text-xs md:text-sm">Diberikan kepada detektif muda yang berhasil memecahkan teka-teki matematika!</p>
+                    </div>
+
+                    <!-- STUDENT RESULT STATS -->
+                    <div class="bg-sky-50 rounded-2xl p-4 border border-sky-200 max-w-md mx-auto space-y-2 text-left">
+                        <div class="flex justify-between items-center border-b border-sky-200 pb-2">
+                            <span class="text-xs text-slate-600 font-bold">NAMA DETEKTIF:</span>
+                            <span id="result-student-name" class="font-bold text-sky-900 text-base">Siswa Hebat</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-sky-200 pb-2">
+                            <span class="text-xs text-slate-600 font-bold">KELAS:</span>
+                            <span id="result-student-class" class="font-bold text-sky-800 text-sm">Kelas 5A</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-600 font-bold">LEVEL MISI:</span>
+                            <span id="result-level" class="font-bold text-sky-700 text-sm">Level 1 - Detektif Pemula</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-600 font-bold">TOTAL SKOR:</span>
+                            <span id="result-score" class="font-bold text-amber-600 text-xl font-fredoka">100 / 100</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-600 font-bold">LENCANA PENGHARGAAN:</span>
+                            <span id="result-badge" class="font-bold text-emerald-600 text-sm">🥇 Master Detektif</span>
+                        </div>
+                    </div>
+
+                    <!-- TEACHER NOTES -->
+                    <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 text-xs text-amber-900 text-left max-w-md mx-auto">
+                        <p class="font-bold"><i class="fa-solid fa-clipboard-check mr-1"></i> Catatan Capaian Kompetensi:</p>
+                        <p id="result-eval-text" class="mt-1 leading-relaxed">
+                            Siswa telah mampu mengukur, mengonversi satuan baku, serta menyelesaikan masalah geometri dan durasi waktu dengan cermat.
+                        </p>
+                    </div>
+
+                    <!-- CERTIFICATE ACTIONS -->
+                    <div class="no-print flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                        <button onclick="window.print()" class="bg-purple-600 hover:bg-purple-700 text-white font-fredoka px-5 py-2.5 rounded-2xl shadow-md btn-bounce text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> Cetak / Simpan Laporan
+                        </button>
+                        <button onclick="returnToMenu()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-fredoka px-5 py-2.5 rounded-2xl btn-bounce text-sm">
+                            <i class="fa-solid fa-house mr-1"></i> Pilih Level Lain
+                        </button>
+                        <button onclick="selectAndStart(currentLevel)" class="bg-sky-500 hover:bg-sky-600 text-white font-fredoka px-5 py-2.5 rounded-2xl shadow-md btn-bounce text-sm">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Main Lagi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- HINT MODAL DIALOG -->
+    <div id="modal-hint" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-amber-300 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">💡</span>
+                    <h3 class="font-bold text-lg text-amber-800 font-fredoka">Petunjuk Detektif Kiko</h3>
+                </div>
+                <button onclick="closeHintModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+            </div>
+            
+            <div id="hint-content" class="text-slate-700 text-xs md:text-sm space-y-2 leading-relaxed">
+                <!-- Hint injected dynamically -->
+            </div>
+
+            <button onclick="closeHintModal()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold py-2.5 rounded-xl transition-all btn-bounce text-sm">
+                Saya Mengerti, Terima Kasih! 👍
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* --- SOUND SYNTHESIS (WEB AUDIO API) --- */
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('btn-sound').innerText = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+            if (type === 'correct') {
+                const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                freqs.forEach((f, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = f;
+                    gain.gain.setValueAtTime(0.2, now + i * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.01, now + i * 0.08 + 0.15);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + i * 0.08 + 0.15);
+                });
+            } else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.25);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'pop') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.06);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            }
+        }
+
+        /* --- QUESTION BANK DATABASE (10 QUESTIONS PER LEVEL) --- */
+        const questionBank = {
+            // LEVEL 1: Detektif Pemula (10 Soal Cerita Membaca Skala Langsung)
+            1: [
+                {
+                    topic: "Panjang",
+                    story: "Soal 1: Detektif Kiko menemukan pita petunjuk merah di lokasi kejadian. Mari ukur panjang pita ini dengan penggaris!",
+                    question: "Berapa centimeter (cm) panjang pita merah tersebut?",
+                    visualType: "ruler",
+                    visualData: { length: 8, label: "PITA PETUNJUK" },
+                    options: ["6 cm", "8 cm", "10 cm", "12 cm"],
+                    correct: 1,
+                    explanation: "Ujung pita dimulai dari angka 0 dan garis penunjuk tepat berhenti di angka 8 cm.",
+                    hint: "Lihat garis putus-putus di ujung kanan pita. Garis tersebut menunjuk tepat ke angka <b>8</b> pada penggaris."
+                },
+                {
+                    topic: "Berat",
+                    story: "Soal 2: Kiko menimbang kantong berisi apel misterius di toko buah pasar.",
+                    question: "Lihat jarum timbangan! Berapa gram berat kantong apel tersebut?",
+                    visualType: "scale",
+                    visualData: { weight: 500, max: 1000 },
+                    options: ["300 gram", "500 gram", "700 gram", "1000 gram"],
+                    correct: 1,
+                    explanation: "Jarum merah timbangan menunjuk tepat ke garis skala 500 gram.",
+                    hint: "Perhatikan jarum merah pada dial timbangan. Jarum berdiri tegak lurus menunjuk angka <b>500 g</b>."
+                },
+                {
+                    topic: "Suhu",
+                    story: "Soal 3: Kiko memeriksa suhu air hangat yang digunakan di laboratorium rahasia.",
+                    question: "Berapa derajat Celcius (°C) suhu air hangat pada termometer?",
+                    visualType: "thermometer",
+                    visualData: { temp: 35, max: 50 },
+                    options: ["20 °C", "30 °C", "35 °C", "50 °C"],
+                    correct: 2,
+                    explanation: "Cairan merah termometer naik dan berhenti tepat di antara garis 30 dan 40, yaitu 35 °C.",
+                    hint: "Lihat puncak kolom cairan merah. Ketinggiannya tepat berada di tengah-tengah angka 30 dan 40 (<b>35 °C</b>)."
+                },
+                {
+                    topic: "Waktu",
+                    story: "Soal 4: Kiko melihat jam dinding di stasiun saat kereta pembawa rahasia tiba.",
+                    question: "Pukul berapa waktu yang ditunjukkan oleh jam dinding berikut?",
+                    visualType: "clock",
+                    visualData: { hour: 9, min: 30 },
+                    options: ["08.30", "09.00", "09.30", "10.30"],
+                    correct: 2,
+                    explanation: "Jarum pendek ada di antara angka 9 dan 10. Jarum panjang menunjuk angka 6 (30 menit). Waktu menunjukkan pukul 09.30.",
+                    hint: "Jarum pendek melebihi angka 9. Jarum panjang di angka 6 (6 × 5 = 30 menit). Waktunya adalah <b>09.30</b>."
+                },
+                {
+                    topic: "Panjang",
+                    story: "Soal 5: Kiko mengukur panjang pensil rahasia yang tertinggal di meja petunjuk.",
+                    question: "Berapa centimeter (cm) panjang pensil pada penggaris di bawah ini?",
+                    visualType: "ruler",
+                    visualData: { length: 12, label: "PENSIL RAHASIA" },
+                    options: ["10 cm", "11 cm", "12 cm", "14 cm"],
+                    correct: 2,
+                    explanation: "Ujung pensil sejajar dengan skala angka 12 pada penggaris.",
+                    hint: "Garis bantu lurus ke bawah di ujung pensil tepat berada di angka <b>12 cm</b>."
+                },
+                {
+                    topic: "Berat",
+                    story: "Soal 6: Kiko menimbang kantong tepung kue milik Koki Kota.",
+                    question: "Berapa gram berat tepung kue yang ditunjukkan pada timbangan?",
+                    visualType: "scale",
+                    visualData: { weight: 700, max: 1000 },
+                    options: ["400 gram", "600 gram", "700 gram", "900 gram"],
+                    correct: 2,
+                    explanation: "Jarum penunjuk timbangan mengarah tepat ke angka 700 gram.",
+                    hint: "Lihat jarum merah. Jarum telah melewati 500 dan 600, lalu tepat berada di angka <b>700 g</b>."
+                },
+                {
+                    topic: "Suhu",
+                    story: "Soal 7: Kiko mengukur suhu segelas es teh segar di kantin markas.",
+                    question: "Berapa derajat Celcius (°C) suhu es teh tersebut?",
+                    visualType: "thermometer",
+                    visualData: { temp: 15, max: 50 },
+                    options: ["10 °C", "15 °C", "25 °C", "30 °C"],
+                    correct: 1,
+                    explanation: "Cairan merah termometer berhenti tepat di garis pertengahan antara 10 dan 20, yaitu 15 °C.",
+                    hint: "Perhatikan angka di antara 10 dan 20. Garis menunjukkan angka <b>15 °C</b>."
+                },
+                {
+                    topic: "Waktu",
+                    story: "Soal 8: Bel Sekolah Kota Detektif berbunyi menandakan misi pagi dimulai.",
+                    question: "Pukul berapa bel sekolah tersebut berbunyi?",
+                    visualType: "clock",
+                    visualData: { hour: 7, min: 0 },
+                    options: ["06.00", "07.00", "08.00", "12.00"],
+                    correct: 1,
+                    explanation: "Jarum pendek menunjuk tepat angka 7 dan jarum panjang di angka 12, yang berarti tepat pukul 07.00.",
+                    hint: "Jarum pendek tepat di angka 7 dan jarum panjang tepat di angka 12 (<b>07.00</b>)."
+                },
+                {
+                    topic: "Luas Grid",
+                    story: "Soal 9: Kiko mengamati petak keramik khusus di ruang jejak sepatu.",
+                    question: "Berapa jumlah unit persegi keramik berwarna oranye pada gambar berikut?",
+                    visualType: "grid_area",
+                    visualData: { cols: 4, rows: 2 },
+                    options: ["6 unit²", "8 unit²", "10 unit²", "12 unit²"],
+                    correct: 1,
+                    explanation: "Ada 2 baris keramik dan masing-masing berisi 4 unit. Total = 2 × 4 = 8 unit persegi.",
+                    hint: "Hitung semua persegi oranye yang bernomor! Terakhir menunjukkan angka <b>8</b>."
+                },
+                {
+                    topic: "Panjang",
+                    story: "Soal 10: Detektif Kiko menemukan kunci kuno berukuran kecil.",
+                    question: "Berapa centimeter (cm) panjang kunci kuno tersebut?",
+                    visualType: "ruler",
+                    visualData: { length: 5, label: "KUNCI KUNO" },
+                    options: ["3 cm", "4 cm", "5 cm", "7 cm"],
+                    correct: 2,
+                    explanation: "Kunci kuno membentang dari angka 0 sampai ke angka 5 cm.",
+                    hint: "Ujung kunci berada di garis penunjuk angka <b>5 cm</b>."
+                }
+            ],
+
+            // LEVEL 2: Detektif Menengah (10 Soal Cerita 1 Langkah & Konversi Satuan Baku)
+            2: [
+                {
+                    topic: "Konversi Panjang",
+                    story: "Soal 1: Ibu membeli pita merah sepanjang 2 meter untuk menghias kotak kado rahasia. Kiko ingin mengubah ukurannya ke centimeter.",
+                    question: "Pita sepanjang 2 meter sama dengan berapa centimeter (cm)?",
+                    visualType: "story_icon",
+                    visualData: { icon: "📏", text: "2 meter = ... centimeter" },
+                    options: ["20 cm", "200 cm", "2.000 cm", "20.000 cm"],
+                    correct: 1,
+                    explanation: "1 meter = 100 cm. Jadi, 2 meter = 2 × 100 = 200 cm.",
+                    hint: "Ingat rumus konversi satuan panjang: <b>1 m = 100 cm</b>. Kalikan 2 dengan 100!"
+                },
+                {
+                    topic: "Durasi Waktu",
+                    story: "Soal 2: Kiko memulai latihan memanah pukul 08.00 pagi dan selesai tepat pukul 08.45 pagi.",
+                    question: "Berapa menit durasi (lama waktu) Kiko melakukan latihan memanah?",
+                    visualType: "clock_elapsed",
+                    visualData: { startHour: 8, startMin: 0, endHour: 8, endMin: 45 },
+                    options: ["15 menit", "30 menit", "45 menit", "60 menit"],
+                    correct: 2,
+                    explanation: "Selisih waktu dari 08.00 ke 08.45 adalah 45 - 0 = 45 menit.",
+                    hint: "Hitung selisih menitnya: 45 menit - 0 menit = <b>45 menit</b>."
+                },
+                {
+                    topic: "Konversi Berat",
+                    story: "Soal 3: Pak Tani membawa 1,5 kg beras dan 500 gram gula. Kiko ingin menghitung berat total belanjaan dalam gram.",
+                    question: "Berapa total berat belanjaan Pak Tani dalam gram? (Petunjuk: 1,5 kg = 1.500 gram)",
+                    visualType: "story_icon",
+                    visualData: { icon: "⚖️", text: "1.500 gram + 500 gram = ... gram" },
+                    options: ["1.500 gram", "1.800 gram", "2.000 gram", "2.500 gram"],
+                    correct: 2,
+                    explanation: "1.500 gram + 500 gram = 2.000 gram (setara dengan 2 kg).",
+                    hint: "Jumlahkan angkanya secara langsung: 1.500 + 500 = <b>2.000 gram</b>."
+                },
+                {
+                    topic: "Luas Grid",
+                    story: "Soal 4: Kiko menemukan denah karpet persegi panjang di markas. Karpet terdiri atas 5 kolom dan 3 baris ubin.",
+                    question: "Berapa unit persegi luas karpet tersebut?",
+                    visualType: "grid_area",
+                    visualData: { cols: 5, rows: 3 },
+                    options: ["8 unit²", "12 unit²", "15 unit²", "18 unit²"],
+                    correct: 2,
+                    explanation: "Luas = 5 kolom × 3 baris = 15 unit persegi.",
+                    hint: "Gunakan rumus luas = kolom × baris (5 × 3 = <b>15 unit²</b>)."
+                },
+                {
+                    topic: "Konversi Panjang",
+                    story: "Soal 5: Tali tiang bendera di markas memiliki panjang 300 centimeter.",
+                    question: "Berapa meter (m) panjang tali tiang bendera tersebut?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🚩", text: "300 cm = ... meter" },
+                    options: ["3 meter", "30 meter", "300 meter", "3.000 meter"],
+                    correct: 0,
+                    explanation: "100 cm = 1 meter. Maka 300 cm ÷ 100 = 3 meter.",
+                    hint: "Untuk mengubah cm ke meter, bagilah angka cm dengan 100 (300 ÷ 100 = <b>3 m</b>)."
+                },
+                {
+                    topic: "Konversi Berat",
+                    story: "Soal 6: Kiko membawa batu pemberat seberat 4 kilogram dalam tas misi.",
+                    question: "Berapa gram berat batu tersebut dalam satuan gram?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🪨", text: "4 kg = ... gram" },
+                    options: ["40 gram", "400 gram", "4.000 gram", "40.000 gram"],
+                    correct: 2,
+                    explanation: "1 kg = 1.000 gram. Jadi 4 kg = 4 × 1.000 = 4.000 gram.",
+                    hint: "Kalikan jumlah kg dengan 1.000 (4 × 1.000 = <b>4.000 g</b>)."
+                },
+                {
+                    topic: "Konversi Waktu",
+                    story: "Soal 7: Pertemuan rapat detektif berlangsung selama 2 jam penuh.",
+                    question: "Durasi rapat 2 jam tersebut sama dengan berapa menit?",
+                    visualType: "story_icon",
+                    visualData: { icon: "⏱️", text: "2 jam = ... menit" },
+                    options: ["60 menit", "90 menit", "120 menit", "180 menit"],
+                    correct: 2,
+                    explanation: "1 jam = 60 menit. Maka 2 jam = 2 × 60 = 120 menit.",
+                    hint: "Kalikan 2 dengan 60 menit (2 × 60 = <b>120 menit</b>)."
+                },
+                {
+                    topic: "Keliling Persegi",
+                    story: "Soal 8: Kiko memeriksa papan peta berbentuk persegi dengan panjang sisi 6 cm.",
+                    question: "Berapa centimeter keliling papan peta tersebut?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🗺️", text: "Keliling Persegi (sisi = 6 cm)" },
+                    options: ["12 cm", "18 cm", "24 cm", "36 cm"],
+                    correct: 2,
+                    explanation: "Keliling persegi = 4 × sisi = 4 × 6 cm = 24 cm.",
+                    hint: "Persegi memiliki 4 sisi yang sama panjang: 4 × 6 cm = <b>24 cm</b>."
+                },
+                {
+                    topic: "Operasi Berat",
+                    story: "Soal 9: Kiko membawa 2,5 kg kantong bekal (2.500 gram), lalu ia memberikan 500 gram roti kepada temannya.",
+                    question: "Berapa gram sisa berat bekal Kiko sekarang?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🎒", text: "2.500 gram - 500 gram = ... gram" },
+                    options: ["1.500 gram", "2.000 gram", "2.200 gram", "3.000 gram"],
+                    correct: 1,
+                    explanation: "2.500 gram - 500 gram = 2.000 gram.",
+                    hint: "Kurangi berat awal dengan yang diberikan: 2.500 - 500 = <b>2.000 gram</b>."
+                },
+                {
+                    topic: "Konversi Waktu",
+                    story: "Soal 10: Kiko membaca buku laporan rahasia selama 1 jam 15 menit.",
+                    question: "Berapa total menit Kiko membaca buku tersebut?",
+                    visualType: "story_icon",
+                    visualData: { icon: "📖", text: "1 jam 15 menit = ... menit" },
+                    options: ["45 menit", "60 menit", "75 menit", "90 menit"],
+                    correct: 2,
+                    explanation: "1 jam = 60 menit. Ditambah 15 menit = 60 + 15 = 75 menit.",
+                    hint: "Ubah 1 jam menjadi 60 menit, lalu tambahkan 15 menit (60 + 15 = <b>75 menit</b>)."
+                }
+            ],
+
+            // LEVEL 3: Master Detektif (10 Soal Cerita Multi-Langkah & Geometri)
+            3: [
+                {
+                    topic: "Keliling Kebun",
+                    story: "Soal 1: Kebun tempat petunjuk tersembunyi berbentuk persegi panjang dengan panjang 8 meter dan lebar 5 meter. Kiko ingin memasang pagar memutari kebun.",
+                    question: "Berapa meter keliling kebun yang perlu dipagari?",
+                    visualType: "shape_rect",
+                    visualData: { length: 8, width: 5, labelP: "8 m", labelL: "5 m" },
+                    options: ["13 meter", "26 meter", "40 meter", "50 meter"],
+                    correct: 1,
+                    explanation: "Keliling = 2 × (panjang + lebar) = 2 × (8 + 5) = 2 × 13 = 26 meter.",
+                    hint: "Tambahkan panjang dan lebar (8 + 5 = 13), lalu kalikan 2 = <b>26 m</b>."
+                },
+                {
+                    topic: "Volume 3D",
+                    story: "Soal 2: Kiko menemukan susunan kotak rahasia berbentuk balok. Ukurannya: panjang 3 kubus, lebar 2 kubus, dan tinggi 2 kubus.",
+                    question: "Berapa total volume (banyak kubus satuan) susunan kotak tersebut?",
+                    visualType: "volume_cubes",
+                    visualData: { x: 3, y: 2, z: 2 },
+                    options: ["7 kubus", "10 kubus", "12 kubus", "16 kubus"],
+                    correct: 2,
+                    explanation: "Volume balok = p × l × t = 3 × 2 × 2 = 12 kubus satuan.",
+                    hint: "Kalikan semua dimensinya: 3 × 2 × 2 = <b>12 kubus satuan</b>."
+                },
+                {
+                    topic: "Suhu Multi-Step",
+                    story: "Soal 3: Suhu es krim di freezer awalnya adalah -4°C. Setelah dikeluarkan selama 20 menit, suhunya naik sebesar 10°C.",
+                    question: "Berapa derajat Celcius (°C) suhu es krim sekarang?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🍦", text: "Awal: -4°C | Kenaikan: +10°C" },
+                    options: ["6°C", "14°C", "-6°C", "8°C"],
+                    correct: 0,
+                    explanation: "Suhu akhir = -4°C + 10°C = 6°C.",
+                    hint: "Hitung pada garis bilangan: -4 + 10 = <b>6°C</b>."
+                },
+                {
+                    topic: "Waktu Kedatangan",
+                    story: "Soal 4: Detektif Kiko naik bus pukul 07.15 dan perjalanan membutuhkan waktu 1 jam 30 menit.",
+                    question: "Pukul berapa Kiko sampai di markas besar detektif?",
+                    visualType: "clock_arrival",
+                    visualData: { startH: 7, startM: 15, addH: 1, addM: 30 },
+                    options: ["08.15", "08.30", "08.45", "09.00"],
+                    correct: 2,
+                    explanation: "07.15 + 1 jam = 08.15. Ditambah 30 menit = 08.45.",
+                    hint: "Jam: 7 + 1 = 8. Menit: 15 + 30 = 45. Tiba pukul <b>08.45</b>."
+                },
+                {
+                    topic: "Luas Kebun",
+                    story: "Soal 5: Taman bunga di markas berbentuk persegi panjang dengan panjang 12 meter dan lebar 5 meter.",
+                    question: "Berapa meter persegi (m²) luas taman bunga tersebut?",
+                    visualType: "shape_rect",
+                    visualData: { length: 12, width: 5, labelP: "12 m", labelL: "5 m" },
+                    options: ["34 m²", "50 m²", "60 m²", "120 m²"],
+                    correct: 2,
+                    explanation: "Luas persegi panjang = panjang × lebar = 12 m × 5 m = 60 m².",
+                    hint: "Kalikan panjang dengan lebar: 12 × 5 = <b>60 m²</b>."
+                },
+                {
+                    topic: "Volume 3D Besar",
+                    story: "Soal 6: Kiko menyusun balok kayu besar dengan panjang 4 kubus, lebar 3 kubus, dan tinggi 2 kubus.",
+                    question: "Berapa unit kubus satuan total volume balok kayu tersebut?",
+                    visualType: "story_icon",
+                    visualData: { icon: "📦", text: "Panjang = 4, Lebar = 3, Tinggi = 2" },
+                    options: ["18 kubus", "24 kubus", "28 kubus", "32 kubus"],
+                    correct: 1,
+                    explanation: "Volume = 4 × 3 × 2 = 24 kubus satuan.",
+                    hint: "Kalikan ketiga nilainya: 4 × 3 = 12, lalu 12 × 2 = <b>24 kubus</b>."
+                },
+                {
+                    topic: "Perubahan Suhu Kota",
+                    story: "Soal 7: Suhu udara di Kota Detektif pada pagi hari adalah 22°C. Pada siang hari suhu naik 8°C, lalu pada malam hari turun 5°C.",
+                    question: "Berapa suhu udara di Kota Detektif pada malam hari?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🏙️", text: "22°C + 8°C - 5°C = ... °C" },
+                    options: ["23°C", "25°C", "27°C", "30°C"],
+                    correct: 1,
+                    explanation: "Suhu siang = 22 + 8 = 30°C. Suhu malam = 30 - 5 = 25°C.",
+                    hint: "22 + 8 = 30, lalu 30 - 5 = <b>25°C</b>."
+                },
+                {
+                    topic: "Waktu Selesai",
+                    story: "Soal 8: Kiko mulai memeriksa berkas kasus pukul 14.20. Pemeriksaan berkas membutuhkan waktu 2 jam 45 menit.",
+                    question: "Pukul berapa Kiko selesai memeriksa seluruh berkas?",
+                    visualType: "story_icon",
+                    visualData: { icon: "🕵️‍♂️", text: "Mulai 14.20 + 2 jam 45 menit" },
+                    options: ["16.45", "17.05", "17.15", "17.25"],
+                    correct: 1,
+                    explanation: "14.20 + 2 jam = 16.20. Ditambah 45 menit: 20 + 45 = 65 menit (1 jam 5 menit). 16.00 + 1 jam 5 menit = 17.05.",
+                    hint: "14.20 + 2 jam 45 menit = 16 jam 65 menit = <b>17.05</b>."
+                },
+                {
+                    topic: "Biaya Pagar Taman",
+                    story: "Soal 9: Lapangan latihan berbentuk persegi panjang ukuran 10 m × 6 m. Biaya pemagaran adalah Rp 10.000 per meter.",
+                    question: "Berapa total biaya untuk memagari seluruh keliling lapangan latihan?",
+                    visualType: "shape_rect",
+                    visualData: { length: 10, width: 6, labelP: "10 m", labelL: "6 m" },
+                    options: ["Rp 160.000", "Rp 320.000", "Rp 480.000", "Rp 600.000"],
+                    correct: 1,
+                    explanation: "Keliling = 2 × (10 + 6) = 32 meter. Total biaya = 32 m × Rp 10.000 = Rp 320.000.",
+                    hint: "Keliling = 2 × 16 = 32 meter. Biaya = 32 × 10.000 = <b>Rp 320.000</b>."
+                },
+                {
+                    topic: "Kapasitas Kotak",
+                    story: "Soal 10: Sebuah wadah balok memiliki kapasitas volume 60 kubus satuan (5 × 4 × 3). Saat ini wadah baru terisi 20 kubus.",
+                    question: "Berapa kubus satuan lagi yang dibutuhkan agar wadah tersebut terisi penuh?",
+                    visualType: "story_icon",
+                    visualData: { icon: "📥", text: "Kapasitas 60 kubus - Terisi 20 kubus" },
+                    options: ["30 kubus", "40 kubus", "50 kubus", "80 kubus"],
+                    correct: 1,
+                    explanation: "Kekurangan kubus = 60 - 20 = 40 kubus satuan.",
+                    hint: "Kurangi kapasitas total dengan yang sudah terisi: 60 - 20 = <b>40 kubus</b>."
+                }
+            ]
+        };
+
+        /* --- GAME STATE VARIABLES --- */
+        let studentName = "Siswa Hebat";
+        let studentClass = "Kelas 5";
+        let currentLevel = 1;
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let levelQuestions = [];
+        let autoNextTimeout = null;
+        let recapScores = [];
+
+        /* --- INITIALIZATION & REKAP SPREADSHEET SYSTEM --- */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRecapData();
+            renderScoreTable();
+        });
+
+        function loadRecapData() {
+            try {
+                const saved = localStorage.getItem('kiko_recap_scores');
+                if (saved) {
+                    recapScores = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error("Gagal memuat rekap skor:", e);
+                recapScores = [];
+            }
+        }
+
+        function saveRecapData() {
+            try {
+                localStorage.setItem('kiko_recap_scores', JSON.stringify(recapScores));
+            } catch (e) {
+                console.error("Gagal menyimpan rekap skor:", e);
+            }
+        }
+
+        function renderScoreTable() {
+            const tbody = document.getElementById('recap-table-body');
+            if (!tbody) return;
+
+            const searchQuery = (document.getElementById('search-recap')?.value || '').toLowerCase();
+            const filterLvl = document.getElementById('filter-level')?.value || 'all';
+
+            let filtered = recapScores.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.studentClass.toLowerCase().includes(searchQuery);
+                const matchesLvl = filterLvl === 'all' || item.level.toString() === filterLvl;
+                return matchesSearch && matchesLvl;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-6 text-center text-slate-400 italic">
+                            Belum ada data rekapitulasi skor. Silakan selesaikan kuis untuk merekap hasil!
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((item, idx) => `
+                <tr class="hover:bg-sky-50/50 transition-colors">
+                    <td class="p-2.5 text-center font-bold text-slate-400">${idx + 1}</td>
+                    <td class="p-2.5 font-bold text-sky-900">${escapeHtml(item.name)}</td>
+                    <td class="p-2.5 text-slate-600 font-semibold">${escapeHtml(item.studentClass)}</td>
+                    <td class="p-2.5"><span class="bg-sky-100 text-sky-800 text-[11px] font-bold px-2 py-0.5 rounded-full">Level ${item.level}</span></td>
+                    <td class="p-2.5 text-center font-fredoka text-amber-600 text-sm font-bold">${item.score}/100</td>
+                    <td class="p-2.5 text-xs font-semibold text-emerald-700">${escapeHtml(item.badge)}</td>
+                    <td class="p-2.5 text-[11px] text-slate-500">${escapeHtml(item.date)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function exportToCSV() {
+            if (recapScores.length === 0) {
+                alertModal("Data Kosong", "Belum ada rekapitulasi skor yang dapat diunduh.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,No,Nama Siswa,Kelas,Level,Skor,Lencana,Waktu Pengerjaan\n";
+            recapScores.forEach((row, idx) => {
+                csvContent += `${idx + 1},"${row.name}","${row.studentClass}",Level ${row.level},${row.score},"${row.badge}","${row.date}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Skor_Detektif_Kiko_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function confirmClearRecap() {
+            if (recapScores.length === 0) {
+                alertModal("Data Kosong", "Tabel rekapitulasi sudah bersih.");
+                return;
+            }
+            if (window.confirm ? confirm("Apakah Anda yakin ingin menghapus seluruh data rekapitulasi skor siswa?") : true) {
+                recapScores = [];
+                saveRecapData();
+                renderScoreTable();
+            }
+        }
+
+        function alertModal(title, message) {
+            const hintContent = document.getElementById('hint-content');
+            if (hintContent) {
+                hintContent.innerHTML = `<div class="p-2 font-bold text-slate-700">${message}</div>`;
+                document.getElementById('modal-hint').classList.remove('hidden');
+            }
+        }
+
+        /* --- GAME CONTROL FUNCTIONS --- */
+        function selectAndStart(lvl) {
+            playSound('pop');
+            const inputName = document.getElementById('student-name-input').value.trim();
+            const inputClass = document.getElementById('student-class-input').value.trim();
+            
+            studentName = inputName !== "" ? inputName : "Detektif Cilik";
+            studentClass = inputClass !== "" ? inputClass : "Kelas 5";
+            
+            currentLevel = lvl;
+            currentQuestionIdx = 0;
+            score = 0;
+
+            // Load level questions
+            levelQuestions = [...questionBank[currentLevel]];
+
+            // Update UI elements
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-gameplay').classList.remove('hidden');
+            document.getElementById('game-stats').classList.remove('hidden');
+            document.getElementById('game-stats').classList.add('flex');
+
+            updateStatsDisplay();
+            loadQuestion();
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('display-level').innerText = currentLevel;
+            document.getElementById('display-score').innerText = score;
+            document.getElementById('display-progress').innerText = `${currentQuestionIdx + 1}/${levelQuestions.length}`;
+        }
+
+        /* --- DYNAMIC SVG VISUAL RENDERERS --- */
+        function renderVisual(qData) {
+            const container = document.getElementById('visual-container');
+            container.innerHTML = '';
+
+            const type = qData.visualType;
+            const data = qData.visualData;
+
+            if (type === 'ruler') {
+                const len = data.length;
+                const svg = `
+                <svg viewBox="0 0 420 130" class="w-full max-w-md drop-shadow">
+                    <!-- Object Pencil -->
+                    <rect x="25" y="20" width="${len * 24}" height="22" rx="4" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                    <polygon points="${25 + len * 24},20 ${35 + len * 24},31 ${25 + len * 24},42" fill="#fde68a" stroke="#d97706" stroke-width="1"/>
+                    <polygon points="${31 + len * 24},28 ${35 + len * 24},31 ${31 + len * 24},34" fill="#334155"/>
+                    <text x="35" y="35" font-size="11" font-weight="bold" fill="#78350f">${data.label}</text>
+
+                    <!-- Vertical Drop Line -->
+                    <line x1="${25 + len * 24}" y1="42" x2="${25 + len * 24}" y2="75" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,4"/>
+
+                    <!-- Ruler Base -->
+                    <rect x="15" y="75" width="390" height="45" rx="6" fill="#fef08a" stroke="#eab308" stroke-width="2"/>
+                    ${Array.from({length: 16}).map((_, i) => {
+                        const x = 25 + i * 24;
+                        const isMain = i % 5 === 0;
+                        return `
+                            <line x1="${x}" y1="75" x2="${x}" y2="${isMain ? 95 : 88}" stroke="#854d0e" stroke-width="${isMain ? 2 : 1}"/>
+                            <text x="${x}" y="112" font-size="10" font-weight="bold" fill="#713f12" text-anchor="middle">${i}</text>
+                        `;
+                    }).join('')}
+                    <text x="395" y="112" font-size="10" font-weight="bold" fill="#713f12">cm</text>
+                </svg>`;
+                container.innerHTML = svg;
+            } 
+            else if (type === 'scale') {
+                const w = data.weight;
+                const angle = (w / data.max) * 360 - 90;
+                const rad = (angle * Math.PI) / 180;
+                const nx = 150 + 50 * Math.cos(rad);
+                const ny = 125 + 50 * Math.sin(rad);
+
+                const svg = `
+                <svg viewBox="0 0 300 200" class="w-full max-w-xs drop-shadow">
+                    <!-- Scale Bowl & Apples -->
+                    <path d="M 80 50 Q 150 80 220 50 L 200 30 L 100 30 Z" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/>
+                    <circle cx="135" cy="30" r="14" fill="#ef4444"/>
+                    <circle cx="165" cy="25" r="16" fill="#ef4444"/>
+                    <circle cx="150" cy="18" r="13" fill="#dc2626"/>
+
+                    <!-- Scale Body -->
+                    <rect x="95" y="65" width="110" height="120" rx="16" fill="#0284c7" stroke="#0369a1" stroke-width="3"/>
+                    <circle cx="150" cy="125" r="45" fill="#ffffff" stroke="#bae6fd" stroke-width="3"/>
+                    
+                    <!-- Needle -->
+                    <line x1="150" y1="125" x2="${nx}" y2="${ny}" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="150" cy="125" r="5" fill="#b91c1c"/>
+
+                    <!-- Readout -->
+                    <rect x="120" y="75" width="60" height="20" rx="5" fill="#0f172a"/>
+                    <text x="150" y="89" font-size="11" font-weight="bold" fill="#38bdf8" text-anchor="middle">${w} g</text>
+                </svg>`;
+                container.innerHTML = svg;
+            }
+            else if (type === 'thermometer') {
+                const t = data.temp;
+                const h = (t / data.max) * 110;
+                const y = 150 - h;
+
+                const svg = `
+                <svg viewBox="0 0 200 180" class="w-full max-w-xs drop-shadow">
+                    <rect x="85" y="25" width="30" height="130" rx="15" fill="#e0f2fe" stroke="#0284c7" stroke-width="3"/>
+                    <circle cx="100" cy="155" r="20" fill="#ef4444" stroke="#0284c7" stroke-width="3"/>
+                    <rect x="93" y="${y}" width="14" height="${h + 10}" fill="#ef4444"/>
+                    <circle cx="100" cy="155" r="16" fill="#ef4444"/>
+
+                    ${[0, 10, 20, 30, 40, 50].map(val => {
+                        const lineY = 150 - (val / 50) * 110;
+                        return `
+                            <line x1="115" y1="${lineY}" x2="126" y2="${lineY}" stroke="#0369a1" stroke-width="2"/>
+                            <text x="132" y="${lineY + 4}" font-size="10" font-weight="bold" fill="#0369a1">${val}°C</text>
+                        `;
+                    }).join('')}
+                </svg>`;
+                container.innerHTML = svg;
+            }
+            else if (type === 'clock' || type === 'clock_elapsed' || type === 'clock_arrival') {
+                let hour = data.hour || data.startHour || data.startH || 12;
+                let min = data.min !== undefined ? data.min : (data.startMin !== undefined ? data.startMin : data.startM || 0);
+
+                const minAngle = (min / 60) * 360 - 90;
+                const hourAngle = ((hour % 12 + min / 60) / 12) * 360 - 90;
+
+                const mx = 100 + 52 * Math.cos((minAngle * Math.PI) / 180);
+                const my = 95 + 52 * Math.sin((minAngle * Math.PI) / 180);
+                const hx = 100 + 35 * Math.cos((hourAngle * Math.PI) / 180);
+                const hy = 95 + 35 * Math.sin((hourAngle * Math.PI) / 180);
+
+                const svg = `
+                <svg viewBox="0 0 200 190" class="w-full max-w-xs drop-shadow">
+                    <circle cx="100" cy="95" r="75" fill="#ffffff" stroke="#0284c7" stroke-width="4"/>
+                    
+                    ${Array.from({length: 12}).map((_, i) => {
+                        const a = ((i + 1) * 30 - 90) * Math.PI / 180;
+                        const nx = 100 + 58 * Math.cos(a);
+                        const ny = 95 + 58 * Math.sin(a) + 4;
+                        return `<text x="${nx}" y="${ny}" font-size="10" font-weight="bold" fill="#0369a1" text-anchor="middle">${i + 1}</text>`;
+                    }).join('')}
+
+                    <!-- Hands -->
+                    <line x1="100" y1="95" x2="${hx}" y2="${hy}" stroke="#0f172a" stroke-width="5" stroke-linecap="round"/>
+                    <line x1="100" y1="95" x2="${mx}" y2="${my}" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="100" cy="95" r="5" fill="#0284c7"/>
+                </svg>`;
+                container.innerHTML = svg;
+            }
+            else if (type === 'story_icon') {
+                container.innerHTML = `
+                <div class="text-center space-y-2 py-3">
+                    <div class="text-5xl md:text-6xl animate-bounce">${data.icon}</div>
+                    <div class="bg-sky-100 text-sky-800 font-fredoka px-4 py-1.5 rounded-2xl text-sm md:text-base inline-block border border-sky-300">
+                        ${data.text}
+                    </div>
+                </div>`;
+            }
+            else if (type === 'grid_area') {
+                const cols = data.cols;
+                const rows = data.rows;
+                const cell = 32;
+                let rects = '';
+                for (let r = 0; r < 4; r++) {
+                    for (let c = 0; c < 6; c++) {
+                        const isFilled = c < cols && r < rows;
+                        rects += `<rect x="${15 + c * cell}" y="${15 + r * cell}" width="${cell}" height="${cell}" 
+                            fill="${isFilled ? '#fb923c' : '#ffffff'}" 
+                            stroke="${isFilled ? '#c2410c' : '#cbd5e1'}" stroke-width="2"/>`;
+                        if (isFilled) {
+                            const count = r * cols + c + 1;
+                            rects += `<text x="${15 + c * cell + cell/2}" y="${15 + r * cell + cell/2 + 4}" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">${count}</text>`;
+                        }
+                    }
+                }
+                container.innerHTML = `<svg viewBox="0 0 230 160" class="w-full max-w-xs drop-shadow">${rects}</svg>`;
+            }
+            else if (type === 'shape_rect') {
+                const svg = `
+                <svg viewBox="0 0 260 160" class="w-full max-w-xs drop-shadow">
+                    <rect x="35" y="30" width="190" height="100" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="3"/>
+                    <text x="130" y="20" font-size="12" font-weight="bold" fill="#0369a1" text-anchor="middle">Panjang = ${data.labelP}</text>
+                    <text x="130" y="85" font-size="13" font-weight="bold" fill="#0369a1" text-anchor="middle">DENAH LOKASI</text>
+                    <text x="235" y="85" font-size="12" font-weight="bold" fill="#0369a1" text-anchor="start">Lebar = ${data.labelL}</text>
+                </svg>`;
+                container.innerHTML = svg;
+            }
+            else if (type === 'volume_cubes') {
+                const svg = `
+                <svg viewBox="0 0 260 170" class="w-full max-w-xs drop-shadow">
+                    <!-- Layer 1 Front -->
+                    <g transform="translate(70, 95)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#38bdf8" stroke="#0284c7"/>
+                        <polygon points="0,0 22,11 22,35 0,24" fill="#0284c7" stroke="#0369a1"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                    <g transform="translate(114, 95)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#38bdf8" stroke="#0284c7"/>
+                        <polygon points="0,0 22,11 22,35 0,24" fill="#0284c7" stroke="#0369a1"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                    <g transform="translate(158, 95)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#38bdf8" stroke="#0284c7"/>
+                        <polygon points="0,0 22,11 22,35 0,24" fill="#0284c7" stroke="#0369a1"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+
+                    <!-- Layer 2 Top -->
+                    <g transform="translate(70, 71)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#7dd3fc" stroke="#0284c7"/>
+                        <polygon points="0,0 22,11 22,35 0,24" fill="#0284c7" stroke="#0369a1"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                    <g transform="translate(114, 71)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#7dd3fc" stroke="#0284c7"/>
+                        <polygon points="0,0 22,11 22,35 0,24" fill="#0284c7" stroke="#0369a1"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                    <g transform="translate(158, 71)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#7dd3fc" stroke="#0284c7"/>
+                        <polygon points="0,0 22,11 22,35 0,24" fill="#0284c7" stroke="#0369a1"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+
+                    <!-- Back Rows -->
+                    <g transform="translate(92, 83)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#bae6fd" stroke="#0284c7"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                    <g transform="translate(136, 83)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#bae6fd" stroke="#0284c7"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                    <g transform="translate(180, 83)">
+                        <polygon points="0,0 22,-11 44,0 22,11" fill="#bae6fd" stroke="#0284c7"/>
+                        <polygon points="22,11 44,0 44,24 22,35" fill="#0369a1" stroke="#075985"/>
+                    </g>
+                </svg>`;
+                container.innerHTML = svg;
+            }
+        }
+
+        /* --- QUESTION LOADER & ANSWER CHECKING --- */
+        function loadQuestion() {
+            if (autoNextTimeout) {
+                clearTimeout(autoNextTimeout);
+                autoNextTimeout = null;
+            }
+
+            // Hide feedback overlay
+            document.getElementById('feedback-box').classList.add('hidden');
+
+            const currentQ = levelQuestions[currentQuestionIdx];
+
+            document.getElementById('question-badge-topic').innerText = `Materi: ${currentQ.topic}`;
+            document.getElementById('story-text').innerText = currentQ.story;
+            document.getElementById('question-text').innerText = currentQ.question;
+
+            // Render interactive visual graphic
+            renderVisual(currentQ);
+
+            // Render options
+            const ansContainer = document.getElementById('answers-container');
+            ansContainer.innerHTML = '';
+
+            currentQ.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-sky-50 hover:bg-sky-100 border-2 border-sky-300 hover:border-sky-500 font-bold py-3 px-4 rounded-2xl text-sm md:text-base text-sky-900 transition-all btn-bounce shadow-sm flex items-center justify-between";
+                btn.innerHTML = `
+                    <span>${optText}</span>
+                    <i class="fa-regular fa-circle-check text-sky-400"></i>
+                `;
+                btn.onclick = () => checkAnswer(idx);
+                ansContainer.appendChild(btn);
+            });
+
+            updateStatsDisplay();
+        }
+
+        function checkAnswer(selectedIdx) {
+            // Lock options from further clicks
+            const ansContainer = document.getElementById('answers-container');
+            const buttons = ansContainer.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const currentQ = levelQuestions[currentQuestionIdx];
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackDesc = document.getElementById('feedback-desc');
+            const feedbackExp = document.getElementById('feedback-explanation');
+            const btnNext = document.getElementById('btn-next-question');
+
+            // Highlight correct (green) and incorrect (red) selection
+            buttons.forEach((btn, idx) => {
+                if (idx === currentQ.correct) {
+                    btn.className = "w-full bg-emerald-100 border-2 border-emerald-500 font-bold py-3 px-4 rounded-2xl text-sm md:text-base text-emerald-900 transition-all shadow-sm flex items-center justify-between";
+                } else if (idx === selectedIdx) {
+                    btn.className = "w-full bg-red-100 border-2 border-red-500 font-bold py-3 px-4 rounded-2xl text-sm md:text-base text-red-900 transition-all shadow-sm flex items-center justify-between";
+                } else {
+                    btn.className = "w-full bg-slate-100 border-2 border-slate-200 font-bold py-3 px-4 rounded-2xl text-sm md:text-base text-slate-400 opacity-60 flex items-center justify-between";
+                }
+            });
+
+            if (selectedIdx === currentQ.correct) {
+                // Correct Answer (10 points each * 10 questions = 100 max)
+                playSound('correct');
+                score += 10;
+                updateStatsDisplay();
+
+                confetti({
+                    particleCount: 70,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                feedbackIcon.innerText = "🎉";
+                feedbackTitle.className = "font-fredoka text-2xl font-bold text-emerald-600";
+                feedbackTitle.innerText = "Luar Biasa, Jawaban Tepat!";
+                feedbackDesc.innerText = `Jawaban kamu benar (+10 Poin). Memproses ke soal berikutnya...`;
+                feedbackExp.innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i> <b>Penjelasan Kiko:</b> ${currentQ.explanation}`;
+                btnNext.className = "bg-emerald-500 hover:bg-emerald-600 text-white font-fredoka px-8 py-3 rounded-2xl shadow-md btn-bounce text-sm md:text-base inline-flex items-center gap-2";
+            } else {
+                // Wrong Answer
+                playSound('wrong');
+                feedbackIcon.innerText = "🐰💬";
+                feedbackTitle.className = "font-fredoka text-2xl font-bold text-amber-600";
+                feedbackTitle.innerText = "Hampir Tepat!";
+                feedbackDesc.innerText = `Jawaban belum tepat. Memproses ke soal berikutnya...`;
+                feedbackExp.innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i> <b>Kunci Jawaban & Penjelasan:</b> ${currentQ.explanation}`;
+                btnNext.className = "bg-amber-500 hover:bg-amber-600 text-white font-fredoka px-8 py-3 rounded-2xl shadow-md btn-bounce text-sm md:text-base inline-flex items-center gap-2";
+            }
+
+            feedbackBox.classList.remove('hidden');
+
+            // Automatic advance to next question in 2.5 seconds
+            if (autoNextTimeout) clearTimeout(autoNextTimeout);
+            autoNextTimeout = setTimeout(() => {
+                nextQuestion();
+            }, 2500);
+        }
+
+        function nextQuestion() {
+            if (autoNextTimeout) {
+                clearTimeout(autoNextTimeout);
+                autoNextTimeout = null;
+            }
+            playSound('pop');
+            currentQuestionIdx++;
+
+            if (currentQuestionIdx >= levelQuestions.length) {
+                showResultScreen();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        /* --- HINT MODAL LOGIC --- */
+        function showHintModal() {
+            playSound('pop');
+            const currentQ = levelQuestions[currentQuestionIdx];
+            document.getElementById('hint-content').innerHTML = `<p>${currentQ.hint}</p>`;
+            document.getElementById('modal-hint').classList.remove('hidden');
+        }
+
+        function closeHintModal() {
+            playSound('pop');
+            document.getElementById('modal-hint').classList.add('hidden');
+        }
+
+        /* --- RESULT & CERTIFICATE DISPLAY --- */
+        function showResultScreen() {
+            playSound('correct');
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.4 }
+            });
+
+            document.getElementById('screen-gameplay').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            document.getElementById('result-student-name').innerText = studentName;
+            document.getElementById('result-student-class').innerText = studentClass;
+            
+            const levelNames = {
+                1: "Level 1 - Detektif Pemula (10 Soal)",
+                2: "Level 2 - Detektif Menengah (10 Soal)",
+                3: "Level 3 - Master Detektif (10 Soal)"
+            };
+            document.getElementById('result-level').innerText = levelNames[currentLevel];
+            document.getElementById('result-score').innerText = `${score} / 100`;
+
+            let badge = "🥇 Detektif Bintang 3";
+            let evalText = "Siswa menunjukkan penguasaan sangat luar biasa dalam memahami soal cerita, mengonversi satuan baku, serta menyelesaikan pemecahan masalah geometri matematika secara teliti.";
+
+            if (score < 60) {
+                badge = "🥉 Detektif Pembelajar";
+                evalText = "Siswa perlu berlatih kembali dalam membaca skala alat ukur dan memahami langkah-langkah penyelesaian soal cerita matematika dasar.";
+            } else if (score < 90) {
+                badge = "🥈 Detektif Handal";
+                evalText = "Siswa sudah memahami sebagian besar konsep pengukuran dan geometri dengan baik, namun perlu lebih teliti pada perhitungan multi-langkah.";
+            }
+
+            document.getElementById('result-badge').innerText = badge;
+            document.getElementById('result-eval-text').innerText = evalText;
+
+            // RECORD SCORE TO SPREADSHEET RECAP
+            const now = new Date();
+            const dateFormatted = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            
+            const newRecord = {
+                id: Date.now(),
+                name: studentName,
+                studentClass: studentClass,
+                level: currentLevel,
+                score: score,
+                badge: badge,
+                date: dateFormatted
+            };
+
+            recapScores.unshift(newRecord);
+            saveRecapData();
+            renderScoreTable();
+        }
+
+        function returnToMenu() {
+            playSound('pop');
+            renderScoreTable();
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-gameplay').classList.add('hidden');
+            document.getElementById('game-stats').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
